@@ -1,6 +1,6 @@
 import json
 import os
-from attendanceManagement.control_logic import input_attendance
+from attendanceManagement.control_logic import request_handler
 
 
 def json_decorator(msg):

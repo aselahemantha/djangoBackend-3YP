@@ -8,6 +8,7 @@ class Employee(models.Model):
     gender = models.CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], default='M')
     age = models.IntegerField()
     contact_address = models.CharField(max_length=200)
+    pin_code = models.IntegerField(null=False, default=1234)
     emp_email = models.EmailField(null=False)
     emp_password = models.CharField(max_length=200, null=False)
 
@@ -39,8 +40,8 @@ class Attendance_Details(models.Model):
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
     present = models.BooleanField()
-    in_time = models.TimeField()
-    out_time = models.TimeField()
+    in_time = models.TimeField(null=True)
+    out_time = models.TimeField(null=True)
 
     def __str__(self):
         return str(self.attendance_id)
@@ -63,3 +64,11 @@ class Duty_Duration(models.Model):
 
     def __str__(self):
         return str(self.duty_id)
+
+
+class Security_Log(models.Model):
+    log_id = models.AutoField(primary_key=True)
+    emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    fp_status = models.CharField(max_length=100)
+    pin_status = models.CharField(max_length=100)
+    lock_status = models.CharField(max_length=100)

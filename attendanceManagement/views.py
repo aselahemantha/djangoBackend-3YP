@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from attendanceManagement.mqtt import publish_msg
-from attendanceManagement.control_logic import input_attendance
+from attendanceManagement.control_logic import request_handler
+
 
 class HomeView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -76,3 +77,8 @@ class AttendanceView(APIView):
         except Exception as e:
             return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class LogDetailView(APIView):
+
+    def post(self, request):
+        pass
