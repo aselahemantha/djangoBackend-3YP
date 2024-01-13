@@ -13,6 +13,9 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+import dj_database_url
+from django.contrib import staticfiles
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +23,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)@4^vn(icv31)l@cyex-c1t3zgn*ufz%p*nmyn%u6d2$7&%_7f'
+SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-)@4^vn(icv31)l@cyex-c1t3zgn*ufz%p*nmyn%u6d2$7&%_7f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
 
@@ -50,7 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # Changed
+    'corsheaders.middleware.CorsMiddleware',  # Changed
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Changed
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'
@@ -77,12 +87,34 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'attendance_management_system',
+#         'USER': 'attendance_management_system_user',
+#         'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
+#         'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#     }
+#
+# }
+
+if not DEBUG:
+    DATABASES = {'default': dj_database_url.parse(os.environ.get('INTERNAL_DATABASE_URL'))}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'attendance_management_system',
+            'USER': 'attendance_management_system_user',
+            'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
+            'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
+            'PORT': '5432',
+        }}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -120,7 +152,15 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Following settings only make sense on production and may break development environments.
+if not DEBUG:
+    # Tell Django to copy statics to the `staticfiles` directory
+    # in your application directory on Render.
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    # Turn on WhiteNoise storage backend that takes care of compressing static files
+    # and creating unique names for each version so they can safely be cached forever.
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -130,27 +170,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # added the authentication JWT Class in REST_FRAMEWORK
 
 REST_FRAMEWORK = {
-     'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-      ],
+    ],
 }
 
 # added the SIMPLE_JWT token configurations to implement an access/refresh logic
 
 SIMPLE_JWT = {
-     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
-     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-     'ROTATE_REFRESH_TOKENS': True,
-     'BLACKLIST_AFTER_ROTATION': True
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=5),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
 }
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
-# MQTT Settings
-MQTT_SERVER = 'i5363520.ala.us-east-1.emqxsl.com'
-MQTT_PORT = 8883
-MQTT_KEEPALIVE = 60
-MQTT_USER = 'spincoders'
-MQTT_PASSWORD = 'spincoders123'
+# Define the media root and URL
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
