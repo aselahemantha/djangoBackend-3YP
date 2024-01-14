@@ -23,15 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-)@4^vn(icv31)l@cyex-c1t3zgn*ufz%p*nmyn%u6d2$7&%_7f')
+SECRET_KEY = 'django-insecure-)@4^vn(icv31)l@cyex-c1t3zgn*ufz%p*nmyn%u6d2$7&%_7f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# DEBUG = 'RENDER' not in os.environ
 
 # ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [ ]
 # RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 # if RENDER_EXTERNAL_HOSTNAME:
 #     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -45,8 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'attendanceManagement',
-    'corsheaders',
+    'attendanceManagement.apps.AttendanceManagementConfig',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 ]
@@ -59,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Changed
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Changed
 ]
 
@@ -88,10 +85,6 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'attendance_management_system',
@@ -100,7 +93,10 @@ DATABASES = {
         'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
-
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 # if not DEBUG:
@@ -145,7 +141,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
