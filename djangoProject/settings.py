@@ -26,15 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-)@4^vn(icv31)l@cyex-c1t3zgn*ufz%p*nmyn%u6d2$7&%_7f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
+# DEBUG = 'RENDER' not in os.environ
 
 # ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = []
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = ['*']
+# RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+# if RENDER_EXTERNAL_HOSTNAME:
+#     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
 
@@ -87,34 +87,34 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     # 'default': {
-#     #     'ENGINE': 'django.db.backends.sqlite3',
-#     #     'NAME': BASE_DIR / 'db.sqlite3',
-#     # }
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'attendance_management_system',
-#         'USER': 'attendance_management_system_user',
-#         'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
-#         'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
-#         'PORT': '5432',
-#     }
-#
-# }
+DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'attendance_management_system',
+        'USER': 'attendance_management_system_user',
+        'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
+        'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
+        'PORT': '5432',
+    }
 
-if not DEBUG:
-    DATABASES = {'default': dj_database_url.parse(os.environ.get('INTERNAL_DATABASE_URL'))}
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'attendance_management_system',
-            'USER': 'attendance_management_system_user',
-            'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
-            'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
-            'PORT': '5432',
-        }}
+}
+
+# if not DEBUG:
+#     DATABASES = {'default': dj_database_url.parse(os.environ.get('INTERNAL_DATABASE_URL'))}
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'attendance_management_system',
+#             'USER': 'attendance_management_system_user',
+#             'PASSWORD': 'Yuewv7XeXtN9Cwb0SaNziAojSL51IWgW',
+#             'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
+#             'PORT': '5432',
+#         }}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
