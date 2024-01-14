@@ -1,5 +1,7 @@
 import os
 
+from django.core.cache.backends.redis import RedisCache
+
 from .settings import *  # noqa
 from .settings import BASE_DIR
 
@@ -12,7 +14,6 @@ DEBUG = False
 # WhiteNoise configuration
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Add whitenoise middleware after the security middleware
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
