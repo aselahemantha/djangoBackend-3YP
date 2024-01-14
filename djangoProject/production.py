@@ -10,6 +10,7 @@ from .settings import BASE_DIR
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 DEBUG = False
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # WhiteNoise configuration
 MIDDLEWARE = [
@@ -38,16 +39,5 @@ DATABASES = {
         'HOST': conn_str_params['host'],
         'USER': conn_str_params['user'],
         'PASSWORD': conn_str_params['password'],
-    }
-}
-
-CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": os.environ.get('AZURE_REDIS_CONNECTIONSTRING'),
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-        },
     }
 }

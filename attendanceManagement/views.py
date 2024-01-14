@@ -4,7 +4,7 @@ import time
 
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import FileUploadParser
 from rest_framework.views import APIView
@@ -22,11 +22,10 @@ from attendanceManagement.control_logic import request_handler
 
 
 class HomeView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        content = {'message': 'Welcome to the JWT Authentication page using React Js and Django!'}
-        return Response(content)
+        return render(request, 'home.html')
 
 
 # Log Out REST endpoint
