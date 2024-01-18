@@ -3,8 +3,8 @@
 set -o errexit
 
 python3 -m venv .venv
-. .venv/bin/activate
-pip3 install -r requirements.txt
+source .venv/bin/activate
+pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 python manage.py migrate
