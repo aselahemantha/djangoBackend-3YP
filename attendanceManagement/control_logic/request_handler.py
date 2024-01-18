@@ -1,6 +1,5 @@
 from datetime import datetime
 from attendanceManagement.models import Employee, Attendance_Details
-from django.db.models import Q
 
 
 def mark_attendance(emp_id, present=True, in_time=None):

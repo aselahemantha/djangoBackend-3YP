@@ -1,14 +1,13 @@
 from imutils import paths
 import face_recognition
-import argparse
 import pickle
 import cv2
 import os
 from django.conf import settings
-from django.core.files.storage import default_storage
 
 dataset_path = os.path.join(settings.MEDIA_ROOT, "datasets")
-encodings_path = "attendanceManagement/face_detection/encodings.pickle"
+#encodings_path = "attendanceManagement/face_detection/encodings.pickle"
+encodings_path = os.path.join(settings.MEDIA_ROOT, "encodings.pickle")
 detection_method = "hog"  # or "hog"
 
 

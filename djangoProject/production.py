@@ -1,7 +1,5 @@
 import os
 
-from django.core.cache.backends.redis import RedisCache
-
 from .settings import *  # noqa
 from .settings import BASE_DIR
 
@@ -10,11 +8,11 @@ from .settings import BASE_DIR
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 DEBUG = False
-SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # WhiteNoise configuration
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Add whitenoise middleware after the security middleware
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

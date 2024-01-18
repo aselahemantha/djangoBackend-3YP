@@ -13,11 +13,11 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-import dj_database_url
 from django.contrib import staticfiles
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -30,13 +30,15 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = [ ]
+ALLOWED_HOSTS = []
 # RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 # if RENDER_EXTERNAL_HOSTNAME:
 #     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Application definition
+if 'CODESPACE_NAME' in os.environ:
+    CSRF_TRUSTED_ORIGINS = [f'https://{os.getenv("CODESPACE_NAME")}-8000.{os.getenv("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN")}']
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,7 +67,9 @@ ROOT_URLCONF = 'djangoProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        #'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -93,10 +97,6 @@ DATABASES = {
         'HOST': 'dpg-cmfbus6d3nmc73dq7dog-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
 }
 
 # if not DEBUG:
@@ -146,7 +146,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# Static files (CSS, JavaScript, images)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (uploaded by users)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Following settings only make sense on production and may break development environments.
 if not DEBUG:
@@ -179,9 +185,3 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True
 }
-
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Define the media root and URL
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = "/media/"

@@ -1,11 +1,13 @@
-# import the necessary packages
 import face_recognition
-import argparse
 import pickle
 import cv2
+from django.conf import settings
+import os
 
-recognize_path = "attendanceManagement/face_detection/captured/001.jpeg"
-encodings_path = "attendanceManagement/face_detection/encodings.pickle"
+
+#recognize_path = "attendanceManagement/face_detection/captured/001.jpeg"
+# encodings_path = "attendanceManagement/face_detection/encodings.pickle"
+encodings_path = os.path.join(settings.MEDIA_ROOT, "encodings.pickle")
 detection_method = "hog"  # or "hog"
 
 
