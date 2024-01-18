@@ -9,7 +9,7 @@ face-recognition-models==0.3.0
 gunicorn==21.2.0
 imutils==0.5.4
 numpy==1.26.3
-opencv-python==4.8.1.78
+opencv-python==4.9.0.80
 packaging==23.2
 paho-mqtt==1.6.1
 pillow==10.2.0
