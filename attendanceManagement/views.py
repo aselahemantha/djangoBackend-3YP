@@ -25,7 +25,7 @@ class HomeView(APIView):
     #permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        return render(request, 'home.html')
+        return render(request, 'index.html')
 
 
 # Log Out REST endpoint
@@ -217,3 +217,47 @@ class GetAttendanceView(APIView):
 
         except ValueError:
             return JsonResponse({'error': 'Invalid emp_id or month'}, status=400)
+
+
+# Get All Topic Details REST endpoint
+class GetAllTopicView(APIView):
+    def get(self, request):
+        try:
+            # Call the get_attendance_details function
+            topic_details = request_handler.get_all_topic_details()
+
+            # Serialize the attendance details into a JSON response
+            serialized_data = []
+            for topic in topic_details:
+                serialized_data.append({
+                    'topic_id': topic.topic_id,
+                    'topic_name': topic.topic_name,
+                })
+
+            return JsonResponse({'all_topics': serialized_data}, status=200)
+
+        except ValueError:
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# Get All Topic Details REST endpoint
+class GetAllDeviceView(APIView):
+    def get(self, request):
+        try:
+            # Call the get_all_device function
+            all_devices = request_handler.get_all_devices()
+
+            # Serialize the attendance details into a JSON response
+            serialized_data = []
+            for device in all_devices:
+                serialized_data.append({
+                    'device_id': device.device_id,
+                    'active': device.active,
+                    'topic_id': device.topic_id,
+                    'department_id': device.department_id,
+                })
+
+            return JsonResponse({'all_topics': serialized_data}, status=200)
+
+        except ValueError:
+            return JsonResponse({'error': 'Invalid request'}, status=400)

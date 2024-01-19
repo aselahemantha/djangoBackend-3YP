@@ -94,3 +94,10 @@ class Face_Data(models.Model):
     face = models.ImageField(upload_to=upload_faces_to, null=True, blank=True)
 
 
+# Device Details Table
+class Device(models.Model):
+    device_id = models.AutoField(primary_key=True)
+    active = models.BooleanField(default=False)
+    topic_id = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    department_id = models.ForeignKey(Department, on_delete=models.CASCADE)
+    MAC = models.CharField(max_length=200, null=True)

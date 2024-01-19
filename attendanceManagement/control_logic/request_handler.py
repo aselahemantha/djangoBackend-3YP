@@ -1,5 +1,5 @@
 from datetime import datetime
-from attendanceManagement.models import Employee, Attendance_Details
+from attendanceManagement.models import Employee, Attendance_Details, Device, Topic
 
 
 def mark_attendance(emp_id, present=True, in_time=None):
@@ -56,4 +56,28 @@ def get_attendance_details(emp_id, month):
         return []
     except Exception as e:
         print(f"An error occurred while getting attendance details: {str(e)}")
+        return []
+
+
+def get_all_topic_details():
+
+    try:
+        # Filter all topic details
+        topic_details = Topic.objects.all()
+
+        return topic_details
+    except Exception as e:
+        print(f"An error occurred while getting topic details: {str(e)}")
+        return []
+
+
+def get_all_devices():
+
+    try:
+        # Filter all topic details
+        all_devices = Device.objects.all()
+
+        return all_devices
+    except Exception as e:
+        print(f"An error occurred while getting device details: {str(e)}")
         return []
