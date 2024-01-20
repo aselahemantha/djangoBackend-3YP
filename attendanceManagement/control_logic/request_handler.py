@@ -1,5 +1,6 @@
 from datetime import datetime
-from attendanceManagement.models import Employee, Attendance_Details, Device, Topic
+from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data
+from attendanceManagement.mqtt import publish_msg
 
 
 def mark_attendance(emp_id, present=True, in_time=None):
@@ -38,7 +39,6 @@ def mark_attendance(emp_id, present=True, in_time=None):
 
 
 def get_attendance_details(emp_id, month):
-
     try:
         # Get the Employee instance
         employee = Employee.objects.get(emp_id=emp_id)
@@ -60,7 +60,6 @@ def get_attendance_details(emp_id, month):
 
 
 def get_all_topic_details():
-
     try:
         # Filter all topic details
         topic_details = Topic.objects.all()
@@ -72,12 +71,53 @@ def get_all_topic_details():
 
 
 def get_all_devices():
-
     try:
-        # Filter all topic details
+        # Filter all device details
         all_devices = Device.objects.all()
 
         return all_devices
     except Exception as e:
         print(f"An error occurred while getting device details: {str(e)}")
         return []
+
+
+def check_pin(emp_id, pin_code):
+    try:
+        # Get the PIN Data instance
+        pin_data = Pin_Data.objects.get(emp_id=emp_id)
+
+        # Check if the entered pin_code matches the stored pin_code
+        if pin_data.pin_code == pin_code:
+            data = {
+                "mode": "unlock",
+                "cmd": "unlock_door",
+                "id": emp_id
+            }
+
+            # Assuming publish_msg.run() is a function to publish the JSON message
+            publish_msg.run(data)
+
+            return "Successful"
+        else:
+            return "Fail"
+
+    except Pin_Data.DoesNotExist:
+        # Handle the case where the employee with the given emp_id is not found
+        return "Pin Data not found"
+
+
+def store_pin(emp_id, pin_code):
+    try:
+        # Create a new PIN Data instance
+        pin = Pin_Data.objects.create(
+            emp_id=emp_id,
+            pin_code=pin_code
+        )
+
+        return "Pin stored successfully"
+
+    except Exception as e:
+        # Handle exceptions, such as IntegrityError if the emp_id already exists
+        return f"Error storing pin: {str(e)}"
+
+

@@ -240,7 +240,7 @@ class GetAllTopicView(APIView):
             return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
-# Get All Topic Details REST endpoint
+# Get All Device Details REST endpoint
 class GetAllDeviceView(APIView):
     def get(self, request):
         try:
@@ -261,3 +261,51 @@ class GetAllDeviceView(APIView):
 
         except ValueError:
             return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# Check entered pin
+class CheckPinView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            emp_id_value = request.data.get('emp_id')
+            pin_code = request.data.get('pin_code')
+
+            if not pin_code or not emp_id_value:
+                return Response({'error': 'PIN Code and Employee ID are required'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                state = request_handler.check_pin(emp_id_value, pin_code)
+
+                return Response({'message': 'Unlock Door', 'Status': state},
+                                status=status.HTTP_200_OK)
+
+            except ValueError:
+                return Response({'error': 'Invalid format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Save New User to the database
+class StorePinView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            emp_id_value = request.data.get('emp_id')
+            pin_code = request.data.get('pin_code')
+
+            if not pin_code or not emp_id_value:
+                return Response({'error': 'PIN Code and Employee ID are required'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                state = request_handler.store_pin(emp_id_value, pin_code)
+
+                return Response({'message': 'Pin Code Processing: ', 'Status': state},
+                                status=status.HTTP_200_OK)
+
+            except ValueError:
+                return Response({'error': 'Invalid format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
