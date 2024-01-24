@@ -98,7 +98,6 @@ def upload_faces_to(instance, filename):
     return os.path.join('datasets', emp_id_folder, filename)
 
 
-
 class Face_Data(models.Model):
     pin_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -107,8 +106,8 @@ class Face_Data(models.Model):
 
 # Device Details Table
 class Device(models.Model):
-    device_id = models.AutoField(primary_key=True)
-    active = models.BooleanField(default=False)
+    device_id = models.CharField(primary_key=True, max_length=10, unique=True)
     topic_id = models.ForeignKey(Topic, on_delete=models.CASCADE)
     department_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     MAC = models.CharField(max_length=200, null=True)
+    lock_status = models.BooleanField(default=False)

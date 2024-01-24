@@ -313,3 +313,27 @@ class StorePinView(APIView):
 
         except Exception as e:
             return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Save device lock statue
+class StoreDeviceLockView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            device_id = request.data.get('device_id')
+            lock_state = request.data.get('lock_state')
+
+            if not device_id or not lock_state:
+                return Response({'error': 'Device ID and State are required'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                state = request_handler.update_device_lock_status(device_id, lock_state)
+
+                return Response({'message': 'Pin Code Processing: ', 'Status': state},
+                                status=status.HTTP_200_OK)
+
+            except ValueError:
+                return Response({'error': 'Invalid format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

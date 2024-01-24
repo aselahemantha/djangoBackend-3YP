@@ -14,6 +14,7 @@ urlpatterns = [
     path('get-all-topic/', views.GetAllTopicView.as_view(), name='get-all-topic'),
     path('get-all-device', views.GetAllDeviceView.as_view(), name='get-all-devices'),
     path('check-pin/', views.CheckPinView.as_view(), name='check-pin'),
-    path('save-pin/', views.StorePinView.as_view(), name='store-pin')
+    path('save-pin/', views.StorePinView.as_view(), name='store-pin'),
+    path('save-device-lock/', views.StoreDeviceLockView.as_view(), name='store-lock'),
 
 ]

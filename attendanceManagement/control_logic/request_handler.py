@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from django.core.exceptions import ObjectDoesNotExist
+
 from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data
 from attendanceManagement.mqtt import publish_msg
 
@@ -112,3 +115,11 @@ def store_pin(emp_id, pin_code):
         return f"Error storing pin: {str(e)}"
 
 
+def update_device_lock_status(device_id, lock_status):
+    try:
+        device = Device.objects.get(device_id=device_id)
+        device.lock_status = lock_status
+        device.save()
+        return True
+    except ObjectDoesNotExist:
+        return False
