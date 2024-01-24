@@ -1,6 +1,8 @@
 import os
 from django.db import models
 
+from djangoProject import settings
+
 
 # Topic Details
 class Topic(models.Model):
@@ -51,7 +53,7 @@ class Attendance_Details(models.Model):
 
 
 # Security Log Details Table
-class Security_Log(models.Model):
+class Log_Details(models.Model):
     log_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     fp_status = models.CharField(max_length=100)
@@ -85,7 +87,16 @@ def upload_faces_to(instance, filename):
     emp_id_folder = str(instance.emp_id.emp_id)
     count = Face_Data.objects.filter(emp_id=instance.emp_id).count() + 1
     filename = f"{count}.jpg"
+    full_path = os.path.join(settings.MEDIA_ROOT, 'datasets', emp_id_folder, filename)
+
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'datasets', emp_id_folder), exist_ok=True)
+
+    # Write the byte data directly to the file
+    with open(full_path, 'wb') as destination:
+        destination.write(instance.face.read())
+
     return os.path.join('datasets', emp_id_folder, filename)
+
 
 
 class Face_Data(models.Model):

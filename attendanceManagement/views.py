@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import  base64
 
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
@@ -77,12 +78,14 @@ class MarkAttendanceView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             print(request.data)
-            image_file = request.data.get('image')
+            image_file_64 = request.data.get('image')
             in_time = request.data.get('in_time')
 
-            if not image_file:
+            if not image_file_64:
                 return Response({'error': 'Image file is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Decode the image file
+            image_file = base64.b64decode(image_file_64)
             # Save the image to a folder
             image_path = self.save_image(image_file)
             print(image_path)
@@ -106,28 +109,26 @@ class MarkAttendanceView(APIView):
 
         os.makedirs(os.path.join(settings.MEDIA_ROOT, save_path), exist_ok=True)
 
-        with default_storage.open(full_path, 'wb') as destination:
-            for chunk in image_file.chunks():
-                destination.write(chunk)
+        # Write the byte data directly to the file
+        with open(full_path, 'wb') as destination:
+            destination.write(image_file)
 
         return full_path
 
     def get_name(self, image_file):
-
         id_arr = recognize_faces_image.recognize_face(image_file)
 
         if len(id_arr) == 1:
             return id_arr[0]
 
 
-# Storing the photos for encoding REST endpoint
 class StoreFacesView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            image_file = request.data.get('image')
+            image_file_64 = request.data.get('image')
             emp_id_value = request.data.get('emp_id')
 
-            if not image_file or not emp_id_value:
+            if not image_file_64 or not emp_id_value:
                 return Response({'error': 'Image file and Employee ID are required'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -136,6 +137,9 @@ class StoreFacesView(APIView):
                 employee = get_object_or_404(Employee, emp_id=emp_id)
             except ValueError:
                 return Response({'error': 'Invalid emp_id format'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Decode the image file
+            image_file = base64.b64decode(image_file_64)
 
             # Save the image to the specified path using the upload_to function
             face_data = Face_Data(emp_id=employee, face=image_file)
@@ -287,7 +291,7 @@ class CheckPinView(APIView):
             return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Save New User to the database
+# Save New PIN to the database
 class StorePinView(APIView):
     def post(self, request, *args, **kwargs):
         try:

@@ -88,18 +88,9 @@ def check_pin(emp_id, pin_code):
 
         # Check if the entered pin_code matches the stored pin_code
         if pin_data.pin_code == pin_code:
-            data = {
-                "mode": "unlock",
-                "cmd": "unlock_door",
-                "id": emp_id
-            }
-
-            # Assuming publish_msg.run() is a function to publish the JSON message
-            publish_msg.run(data)
-
-            return "Successful"
+            return True
         else:
-            return "Fail"
+            return False
 
     except Pin_Data.DoesNotExist:
         # Handle the case where the employee with the given emp_id is not found
