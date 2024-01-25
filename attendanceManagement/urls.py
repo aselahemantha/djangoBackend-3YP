@@ -16,5 +16,8 @@ urlpatterns = [
     path('check-pin/', views.CheckPinView.as_view(), name='check-pin'),
     path('save-pin/', views.StorePinView.as_view(), name='store-pin'),
     path('save-device-lock/', views.StoreDeviceLockView.as_view(), name='store-lock'),
+    path('save-topic/', views.SaveTopicView.as_view(), name='save-topic'),
+    path('save-device/', views.SaveDeviceView.as_view(), name='save-device'),
+    path('save-department/', views.SaveDepartmentView.as_view(), name='save-department'),
 
 ]

@@ -1,4 +1,6 @@
 import os
+
+from django.core.files.base import ContentFile
 from django.db import models
 
 from djangoProject import settings
@@ -17,7 +19,7 @@ class Topic(models.Model):
 class Department(models.Model):
     department_id = models.AutoField(primary_key=True)
     department_name = models.CharField(max_length=100)
-    department_description = models.CharField(max_length=255)
+    department_description = models.CharField(max_length=255, null=True)
     topic_id = models.ForeignKey(Topic, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -56,9 +58,9 @@ class Attendance_Details(models.Model):
 class Log_Details(models.Model):
     log_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    fp_status = models.CharField(max_length=100)
-    pin_status = models.CharField(max_length=100)
-    lock_status = models.CharField(max_length=100)
+    fp_status = models.BooleanField(default=False)
+    pin_status = models.BooleanField(default=False)
+    lock_status = models.BooleanField(default=False)
 
 
 # PIN Code Details Table
@@ -77,31 +79,15 @@ def upload_fp_to(instance, filename):
 
 
 class Fingerprint_Data(models.Model):
-    pin_id = models.AutoField(primary_key=True)
+    fp_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     fp = models.ImageField(upload_to=upload_fp_to, null=True, blank=True)
 
 
-# Face Detection Details Table
-def upload_faces_to(instance, filename):
-    emp_id_folder = str(instance.emp_id.emp_id)
-    count = Face_Data.objects.filter(emp_id=instance.emp_id).count() + 1
-    filename = f"{count}.jpg"
-    full_path = os.path.join(settings.MEDIA_ROOT, 'datasets', emp_id_folder, filename)
-
-    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'datasets', emp_id_folder), exist_ok=True)
-
-    # Write the byte data directly to the file
-    with open(full_path, 'wb') as destination:
-        destination.write(instance.face.read())
-
-    return os.path.join('datasets', emp_id_folder, filename)
-
-
 class Face_Data(models.Model):
-    pin_id = models.AutoField(primary_key=True)
+    face_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    face = models.ImageField(upload_to=upload_faces_to, null=True, blank=True)
+    face = models.ImageField(null=True, blank=True)
 
 
 # Device Details Table
