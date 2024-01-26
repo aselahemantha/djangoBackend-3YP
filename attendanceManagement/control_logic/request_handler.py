@@ -211,12 +211,16 @@ def get_all_departments():
         print(f"An error occurred while getting device details: {str(e)}")
         return []
 
-def get_all_devices():
+def get_emp_details(emp_email):
     try:
-        # Filter all device details
-        all_devices = Device.objects.all()
+        # Get the Employee instance
+        employee = Employee.objects.get(emp_email=emp_email)
 
-        return all_devices
+        return employee
+
+    except Employee.DoesNotExist:
+        print(f"Employee with emp_email={emp_email} does not exist.")
+        return []
     except Exception as e:
-        print(f"An error occurred while getting device details: {str(e)}")
+        print(f"An error occurred while getting attendance details: {str(e)}")
         return []

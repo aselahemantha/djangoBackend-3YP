@@ -35,7 +35,6 @@ class Employee(models.Model):
     age = models.IntegerField()
     contact_address = models.CharField(max_length=200)
     emp_email = models.EmailField(null=False)
-    emp_password = models.CharField(max_length=200, null=False)
     department_id = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
 
     def __str__(self):

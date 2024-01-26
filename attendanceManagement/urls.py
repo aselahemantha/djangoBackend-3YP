@@ -19,5 +19,6 @@ urlpatterns = [
     path('save-topic/', views.SaveTopicView.as_view(), name='save-topic'),
     path('save-device/', views.SaveDeviceView.as_view(), name='save-device'),
     path('save-department/', views.SaveDepartmentView.as_view(), name='save-department'),
-
+    path('create_employee/', views.EmployeeCreateView.as_view(), name='employee-create'),
+    path('get-emp/<emp_email>/', views.GetEmployeeDetailsView.as_view(), name='get-emp'),
 ]

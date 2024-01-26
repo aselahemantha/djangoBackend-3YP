@@ -1,28 +1,31 @@
-import json
 import os
-import time
-import  base64
+import base64
 
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import FileUploadParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 
-from attendanceManagement.models import Face_Data, Employee, Fingerprint_Data
+from attendanceManagement.models import Face_Data, Employee, Fingerprint_Data, Department
 from attendanceManagement.mqtt import publish_msg
 from attendanceManagement.control_logic import request_handler
 from django.conf import settings
 from attendanceManagement.face_detection import recognize_faces_image, encode_faces
 from attendanceManagement.control_logic import request_handler
 
+'''
+Home -> Home Page
+Log Out -> Log Out Function
+Configure Device -> Configure Device Function
+Active Device -> Active Device Function
+Mark Attendance -> Mark Attendance Function
+Store Faces -> Store Faces of the Employees
+GetAttendanceView
+'''
 
 class HomeView(APIView):
     #permission_classes = (IsAuthenticated,)
@@ -493,3 +496,59 @@ class SaveDeviceView(APIView):
 
         except ValueError:
             return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# Create New Employee Class
+class EmployeeCreateView(APIView):
+    def post(self, request, *args, **kwargs):
+
+        department_name = request.data.get('departmentName')
+
+        try:
+            department_instance = Department.objects.get(department_name=department_name)
+
+        except Department.DoesNotExist:
+            return Response(f"No department found with the name {department_name}", status=404)
+
+        employee = Employee.objects.create(
+            first_name=request.data.get('firstName'),
+            last_name=request.data.get('lastName'),
+            gender=request.data.get('gender'),
+            age=request.data.get('age'),
+            contact_address=request.data.get('number'),
+            emp_email=request.data.get('email'),
+            department_id=department_instance
+        )
+
+        return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
+
+
+# Get Employee Details According to the email
+class GetEmployeeDetailsView(APIView):
+    def get(self, request, emp_email):
+        try:
+
+            # Call the get_attendance_details function
+            emp_details = request_handler.get_emp_details(emp_email)
+
+            # Serialize the attendance details into a JSON response
+            serialized_data = []
+
+            try:
+                department_dict = model_to_dict(emp_details.department_id)
+            except Department.DoesNotExist:
+                department_dict = ''
+
+            serialized_data.append({
+                'first_name': emp_details.first_name,
+                'last_name': emp_details.last_name,
+                'gender': emp_details.gender,
+                'age': emp_details.age,
+                'contact_address': emp_details.contact_address,
+                'department_id': department_dict,
+            })
+
+            return JsonResponse({'Emp_details': serialized_data}, status=200)
+
+        except ValueError:
+            return JsonResponse({'error': 'Invalid emp_id or month'}, status=400)
