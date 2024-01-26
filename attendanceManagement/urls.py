@@ -21,4 +21,6 @@ urlpatterns = [
     path('save-department/', views.SaveDepartmentView.as_view(), name='save-department'),
     path('create_employee/', views.EmployeeCreateView.as_view(), name='employee-create'),
     path('get-emp/<emp_email>/', views.GetEmployeeDetailsView.as_view(), name='get-emp'),
+    path('export-no-face-employees/', views.ExportFalseFaceStatusEmployees.as_view(), name='export-false-face-employees'),
+
 ]

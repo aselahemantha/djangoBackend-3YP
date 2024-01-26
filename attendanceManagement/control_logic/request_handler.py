@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 
-from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data, Face_Data, Department
+from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data, Face_Data, Department, Fingerprint_Data
 from attendanceManagement.mqtt import publish_msg
 
 
@@ -126,13 +126,21 @@ def update_device_lock_status(device_id, lock_status):
         return False
 
 
-def save_face_data(employee_instance, face_image):
-    # Assuming you have an Employee instance with emp_id
-    # Create a Face_Data instance
-    image = ContentFile(face_image)
-    face_data_instance = Face_Data(emp_id=employee_instance, face=image)
+def save_face_data(employee_instance):
 
-    face_data_instance.save()
+    try:
+        face_data_instance = Face_Data(emp_id=employee_instance, face_status=True)
+        face_data_instance.save()
+    except Exception as e:
+        f"Error storing pin: {str(e)}"
+
+
+def save_fp_data(employee_instance):
+    try:
+        fp_data_instance = Fingerprint_Data(emp_id=employee_instance, fp_status=True)
+        fp_data_instance.save()
+    except Exception as e:
+        f"Error storing pin: {str(e)}"
 
 
 def store_department(name, description, topic_id):
@@ -211,6 +219,7 @@ def get_all_departments():
         print(f"An error occurred while getting device details: {str(e)}")
         return []
 
+
 def get_emp_details(emp_email):
     try:
         # Get the Employee instance
@@ -224,3 +233,24 @@ def get_emp_details(emp_email):
     except Exception as e:
         print(f"An error occurred while getting attendance details: {str(e)}")
         return []
+
+
+def store_emp(first_name, last_name, gender, age, contact_address, emp_email, department_name):
+    try:
+        department_data = Department.objects.get(department_name=department_name)
+
+        emp = Employee.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            gender=gender,
+            age=age,
+            contact_address=contact_address,
+            emp_email=emp_email,
+            department_id=department_data
+        )
+
+        return "Emp stored successfully"
+
+    except Department.DoesNotExist:
+        # Handle the case where the employee with the given emp_id is not found
+        return "Department Data not found"

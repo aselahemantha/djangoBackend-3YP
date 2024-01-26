@@ -1,3 +1,4 @@
+import json
 import os
 import base64
 
@@ -27,8 +28,9 @@ Store Faces -> Store Faces of the Employees
 GetAttendanceView
 '''
 
+
 class HomeView(APIView):
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         return render(request, 'index.html')
@@ -148,7 +150,7 @@ class StoreFacesView(APIView):
 
             # Save the image using a function similar to save_image
             image_path = self.save_face_image(image_file, employee)
-            request_handler.save_face_data(employee, image_file)
+            request_handler.save_face_data(employee)
 
             return Response({'message': 'Image saved successfully', 'image_path': image_path},
                             status=status.HTTP_200_OK)
@@ -200,7 +202,7 @@ class StoreFPView(APIView):
                 return Response({'error': 'Invalid emp_id format'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Save the image to the specified path using the upload_to function
-            fp_data = Fingerprint_Data(emp_id=employee, face=image_file)
+            fp_data = Fingerprint_Data(emp_id=employee)
             fp_data.save()
 
             # Get the saved image path
@@ -387,7 +389,6 @@ class SaveDepartmentView(APIView):
             # Serialize the attendance details into a JSON response
             serialized_data = []
             for department in all_departments:
-
                 topic_dict = model_to_dict(department.topic_id)
 
                 serialized_data.append({
@@ -424,7 +425,6 @@ class SaveTopicView(APIView):
 
         except Exception as e:
             return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     def get(self, request):
         try:
@@ -479,7 +479,6 @@ class SaveDeviceView(APIView):
             # Serialize the attendance details into a JSON response
             serialized_data = []
             for device in all_devices:
-
                 topic_dict = model_to_dict(device.topic_id)
                 department_dict = model_to_dict(device.department_id)
 
@@ -500,27 +499,33 @@ class SaveDeviceView(APIView):
 
 # Create New Employee Class
 class EmployeeCreateView(APIView):
+
     def post(self, request, *args, **kwargs):
-
-        department_name = request.data.get('departmentName')
-
         try:
-            department_instance = Department.objects.get(department_name=department_name)
+            first_name = request.data.get('first_name')
+            last_name = request.data.get('last_name')
+            gender = request.data.get('gender')
+            age = request.data.get('age')
+            contact_address = request.data.get('contact_address'),
+            emp_email = request.data.get('emp_email'),
+            department_name = request.data.get('department_name')
 
-        except Department.DoesNotExist:
-            return Response(f"No department found with the name {department_name}", status=404)
+            if not first_name or not last_name or not emp_email:
+                return Response({'error': 'Required Data is missing'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        employee = Employee.objects.create(
-            first_name=request.data.get('firstName'),
-            last_name=request.data.get('lastName'),
-            gender=request.data.get('gender'),
-            age=request.data.get('age'),
-            contact_address=request.data.get('number'),
-            emp_email=request.data.get('email'),
-            department_id=department_instance
-        )
+            try:
+                state = request_handler.store_emp(first_name, last_name, gender, age, contact_address, emp_email,
+                                                  department_name)
 
-        return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
+                return Response({'message': 'Department Processing: ', 'Status': state},
+                                status=status.HTTP_200_OK)
+
+            except ValueError:
+                return Response({'error': 'Invalid format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # Get Employee Details According to the email
@@ -552,3 +557,34 @@ class GetEmployeeDetailsView(APIView):
 
         except ValueError:
             return JsonResponse({'error': 'Invalid emp_id or month'}, status=400)
+
+
+class ExportFalseFaceStatusEmployees(APIView):
+
+    def get(self, request):
+        # Query employees without an entry in Face_Data
+        employees_without_face_data = Employee.objects.exclude(face_data__isnull=False)
+
+        # Prepare data for JSON conversion
+        employee_data_list = []
+        serialized_data = []
+        for employee in employees_without_face_data:
+            employee_data = {
+                'emp_id': employee.emp_id,
+                'first_name': employee.first_name,
+                'last_name': employee.last_name,
+                'gender': employee.gender,
+                'age': employee.age,
+                'contact_address': employee.contact_address,
+                'emp_email': employee.emp_email,
+                'department_id': employee.department_id.department_id if employee.department_id else None,
+            }
+            employee_data_list.append(employee_data)
+
+        # Convert data to JSON
+        json_data = json.dumps(employee_data_list, indent=2)
+
+        response = JsonResponse(json_data, safe=False)
+        response['Content-Disposition'] = 'attachment; filename=employees_without_face_data.json'
+
+        return response

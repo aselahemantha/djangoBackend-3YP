@@ -1,9 +1,4 @@
-import os
-
-from django.core.files.base import ContentFile
 from django.db import models
-
-from djangoProject import settings
 
 
 # Topic Details
@@ -69,24 +64,16 @@ class Pin_Data(models.Model):
     pin_code = models.IntegerField(null=True)
 
 
-# Fingerprint Details Table
-def upload_fp_to(instance, filename):
-    emp_id_folder = str(instance.emp_id.emp_id)
-    count = Fingerprint_Data.objects.filter(emp_id=instance.emp_id).count() + 1
-    filename = f"{count}.jpg"
-    return os.path.join('fp_data', emp_id_folder, filename)
-
-
 class Fingerprint_Data(models.Model):
     fp_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    fp = models.ImageField(upload_to=upload_fp_to, null=True, blank=True)
+    fp_status = models.BooleanField(default=False)
 
 
 class Face_Data(models.Model):
     face_id = models.AutoField(primary_key=True)
     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    face = models.ImageField(null=True, blank=True)
+    face_status = models.BooleanField(default=False)
 
 
 # Device Details Table
