@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 
-from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data, Face_Data, Department, Fingerprint_Data
+from attendanceManagement.models import Employee, Attendance_Details, Device, Topic, Pin_Data, Department
 from attendanceManagement.mqtt import publish_msg
 
 
@@ -126,21 +126,21 @@ def update_device_lock_status(device_id, lock_status):
         return False
 
 
-def save_face_data(employee_instance):
-
-    try:
-        face_data_instance = Face_Data(emp_id=employee_instance, face_status=True)
-        face_data_instance.save()
-    except Exception as e:
-        f"Error storing pin: {str(e)}"
-
-
-def save_fp_data(employee_instance):
-    try:
-        fp_data_instance = Fingerprint_Data(emp_id=employee_instance, fp_status=True)
-        fp_data_instance.save()
-    except Exception as e:
-        f"Error storing pin: {str(e)}"
+# def save_face_data(employee_instance):
+#
+#     try:
+#         face_data_instance = Face_Data(emp_id=employee_instance, face_status=True)
+#         face_data_instance.save()
+#     except Exception as e:
+#         f"Error storing pin: {str(e)}"
+#
+#
+# def save_fp_data(employee_instance):
+#     try:
+#         fp_data_instance = Fingerprint_Data(emp_id=employee_instance, fp_status=True)
+#         fp_data_instance.save()
+#     except Exception as e:
+#         f"Error storing pin: {str(e)}"
 
 
 def store_department(name, description, topic_id):

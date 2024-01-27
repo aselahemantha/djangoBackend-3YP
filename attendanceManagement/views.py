@@ -11,9 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 
-from attendanceManagement.models import Face_Data, Employee, Fingerprint_Data, Department
+from attendanceManagement.models import Employee, Department
 from attendanceManagement.mqtt import publish_msg
-from attendanceManagement.control_logic import request_handler
 from django.conf import settings
 from attendanceManagement.face_detection import recognize_faces_image, encode_faces
 from attendanceManagement.control_logic import request_handler

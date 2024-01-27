@@ -64,16 +64,16 @@ class Pin_Data(models.Model):
     pin_code = models.IntegerField(null=True)
 
 
-class Fingerprint_Data(models.Model):
-    fp_id = models.AutoField(primary_key=True)
-    emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    fp_status = models.BooleanField(default=False)
-
-
-class Face_Data(models.Model):
-    face_id = models.AutoField(primary_key=True)
-    emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    face_status = models.BooleanField(default=False)
+# class Fingerprint_Data(models.Model):
+#     fp_id = models.AutoField(primary_key=True)
+#     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+#     fp_status = models.BooleanField(default=False)
+#
+#
+# class Face_Data(models.Model):
+#     face_id = models.AutoField(primary_key=True)
+#     emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+#     face_status = models.BooleanField(default=False)
 
 
 # Device Details Table
